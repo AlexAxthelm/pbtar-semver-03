@@ -57,7 +57,7 @@ jobs:
             > package.tmp.json
 
       - name: diff package.json with updated file
-        run: mv package.json package.tmp.json 
+        run: diff package.json package.tmp.json 
 
       - name: Replace package.json with updated file
         run: mv package.tmp.json package.json
