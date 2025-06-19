@@ -1,0 +1,89 @@
+---
+on:
+  pull_request:
+    branches:
+      - "hotfix/**"
+      - "release/**"
+      - main
+      - production
+
+name: Semantic Release Preview
+
+permissions:
+  contents: read # for checkout
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+      id-token: write # to enable use of OIDC for npm provenance
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+      - name: Install dependencies
+        run: npm clean-install
+      - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
+        run: npm audit signatures
+      - name: inject current branch as target branch
+        env:
+          BASE_BRANCH: ${{ github.base_ref }}
+          HEAD_BRANCH: ${{ github.head_ref }}
+        run: |
+          jq \
+            --arg base "$BASE_BRANCH" \
+            --arg head "$HEAD_BRANCH" \
+            '
+              .release.branches |= map(
+                if type == "string" and . == $base then
+                  $head
+                elif type == "object" and .name == $base then
+                  .name = $head | .
+                else
+                  .
+                end
+              )
+            ' \
+            package.json \
+            | tee package.tmp.json
+
+      - name: diff package.json with updated file
+        run: |
+          type diff
+          diff --version
+          diff_output=$(diff package.json package.tmp.json)
+          if [ -n "$diff_output" ]; then
+            echo "Files differ as expected."
+            echo "$diff_output"
+          else
+            echo "Files are identical."
+            exit 1
+          fi
+
+      - name: Replace package.json with updated file
+        run: |
+          mv package.tmp.json package.json
+
+      - name: Show updated package.json
+        run: |
+          cat package.json
+
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npx semantic-release \
+            --dry-run \
+            --no-ci
+
