@@ -58,6 +58,10 @@
       {
         "name": "main",
         "prerelease": "dev"
+      },
+      {
+        "name": "next",
+        "prerelease": "rc"
       }
     ],
     "plugins": [
