@@ -27,21 +27,9 @@ jobs:
               --base main \
               --head production \
               --title 'Backmerge `production` to `main`' \
-              --body 'Automatic backmerge. Created by GitHub action. Triggered by closing PR #${{ github.event.number }}' \
-              --assignee RMI/pbtar  \
-              --reviewer RMI/pbtar
+              --body 'Automatic backmerge. Created by GitHub action. Triggered by closing PR #${{ github.event.number }}'
             )
           echo "pr-url=$PR_URL"
           echo "pr-url=$PR_URL" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Enable Auto Merge
-        id: merge-pr
-        run: |
-          gh pr merge \
-            $PR_URL \
-            --auto \
-            --merge
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_URL: ${{ steps.create-pr.outputs.pr-url }}
