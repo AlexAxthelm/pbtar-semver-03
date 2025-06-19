@@ -57,13 +57,16 @@ jobs:
             > package.tmp.json
 
       - name: diff package.json with updated file
-        run: diff package.json package.tmp.json 
+        run: |
+          diff package.json package.tmp.json 
 
       - name: Replace package.json with updated file
-        run: mv package.tmp.json package.json
+        run: |
+          mv package.tmp.json package.json
 
       - name: Show updated package.json
-        run: cat package.json
+        run: |
+          cat package.json
 
 
       - name: Release
