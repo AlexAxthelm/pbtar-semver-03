@@ -58,7 +58,14 @@ jobs:
 
       - name: diff package.json with updated file
         run: |
-          diff package.json package.tmp.json 
+          diff_output=$(diff package.json package.tmp.json)
+          if [ -n "$diff_output" ]; then
+            echo "Files differ as expected."
+            echo "$diff_output"
+          else
+            echo "Files are identical."
+            exit 1
+          fi
 
       - name: Replace package.json with updated file
         run: |
