@@ -58,6 +58,8 @@ jobs:
 
       - name: diff package.json with updated file
         run: |
+          type diff
+          diff --version
           diff_output=$(diff package.json package.tmp.json)
           if [ -n "$diff_output" ]; then
             echo "Files differ as expected."
