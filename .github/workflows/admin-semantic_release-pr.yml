@@ -34,6 +34,31 @@ jobs:
         run: npm clean-install
       - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
         run: npm audit signatures
+      - name: inject current branch as target branch
+        env:
+          BASE_BRANCH: ${{ github.base_ref }}
+          HEAD_BRANCH: ${{ github.head_ref }}
+        run: |
+
+          jq \
+            --arg base "$BASE_BRANCH" \
+            --arg head "$HEAD_BRANCH" \
+            '
+              .release.branches |= map(
+                if type == "string" and . == $base then
+                  $head
+                elif type == "object" and .name == $base then
+                  .name = $head | .
+                else
+                  .
+                end
+              )
+            ' \
+            package.json \
+            > package.tmp.json
+          cat package.tmp.json
+          mv package.tmp.json package.json
+
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
