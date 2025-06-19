@@ -54,7 +54,7 @@ jobs:
               )
             ' \
             package.json \
-            > package.tmp.json
+            | tee package.tmp.json
 
       - name: diff package.json with updated file
         run: |
