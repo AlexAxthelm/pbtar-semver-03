@@ -62,8 +62,8 @@ jobs:
       - name: Replace package.json with updated file
         run: mv package.tmp.json package.json
 
-      - name: Show updated package.tmp.json
-        run: package.json
+      - name: Show updated package.json
+        run: cat package.json
 
 
       - name: Release
