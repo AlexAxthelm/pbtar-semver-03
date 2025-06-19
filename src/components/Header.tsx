@@ -18,7 +18,7 @@ const Header: React.FC = () => {
           />
           <div>
             <h1 className="text-xl md:text-2xl font-bold tracking-tight">
-              PBTAR-SEMVER-03
+              PBTAR-SEMVER-03 with flair!
             </h1>
             <p className="text-xs md:text-sm text-white">by RMI</p>
           </div>
