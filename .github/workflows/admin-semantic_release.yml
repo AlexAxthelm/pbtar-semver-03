@@ -1,9 +1,19 @@
 ---
 on:
+  pull_request:
+    branches:
+      - "hotfix/**"
+      - "release/**"
+      - main
+      - production
+      - next
   push:
     branches:
-      - production
+      - "hotfix/**"
+      - "release/**"
       - main
+      - production
+      - next
 
 name: Release
 
