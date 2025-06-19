@@ -39,7 +39,6 @@ jobs:
           BASE_BRANCH: ${{ github.base_ref }}
           HEAD_BRANCH: ${{ github.head_ref }}
         run: |
-
           jq \
             --arg base "$BASE_BRANCH" \
             --arg head "$HEAD_BRANCH" \
@@ -56,8 +55,16 @@ jobs:
             ' \
             package.json \
             > package.tmp.json
-          cat package.tmp.json
-          mv package.tmp.json package.json
+
+      - name: diff package.json with updated file
+        run: mv package.json package.tmp.json 
+
+      - name: Replace package.json with updated file
+        run: mv package.tmp.json package.json
+
+      - name: Show updated package.tmp.json
+        run: package.json
+
 
       - name: Release
         env:
