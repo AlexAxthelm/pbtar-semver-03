@@ -56,7 +56,7 @@ jobs:
             --no-ci | \
           tee /tmp/semantic-release-raw.txt
 
-      - name: Clean semantic-release output for comment
+      - name: prepare semantic-release output for comment
         env:
           FOO: "BAR"
         run: |
@@ -71,6 +71,13 @@ jobs:
             -e "1s/^# /## /" \
           | sed '1s/^/# Expected version change and release notes:\n/' \
           | tee /tmp/semantic-release-clean.txt
+
+          if [ ! -s /tmp/semantic-release-clean.txt ]; then
+            echo "# 🚨 WARNING: This PR is not expected to trigger a new version\n" \
+              "To trigger a version bump, use at least one conventional commit message in this branch." \
+              "See: https://www.conventionalcommits.org/en/v1.0.0/" \
+            | tee /tmp/semantic-release-clean.txt
+          fi
 
       - name: Find Comment
         # https://github.com/peter-evans/find-comment
