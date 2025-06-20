@@ -26,6 +26,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.base_ref }}
+
       - name: Merge PR branch to PR target
         env:
           HEAD_BRANCH: ${{ github.head_ref }}
@@ -33,14 +34,18 @@ jobs:
           git branch -v
           git merge "origin/$HEAD_BRANCH"
           git branch -v
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
+
       - name: Install dependencies
         run: npm clean-install
+
       - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
         run: npm audit signatures
+
       - name: Dry-run Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
