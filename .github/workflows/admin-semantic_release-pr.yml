@@ -31,9 +31,7 @@ jobs:
         env:
           HEAD_BRANCH: ${{ github.head_ref }}
         run: |
-          git branch -v
           git merge "origin/$HEAD_BRANCH"
-          git branch -v
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -54,7 +52,6 @@ jobs:
         run: |
           unset GITHUB_ACTIONS
           npx semantic-release \
-            --debug \
             --dry-run \
             --no-ci | \
           tee /tmp/semantic-release-raw.txt
