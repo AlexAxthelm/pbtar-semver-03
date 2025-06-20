@@ -25,6 +25,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.base_ref }}
+      - name: Merge PR branch to PR target
+        env:
+          HEAD_BRANCH: ${{ github.head_ref }}
+        run: |
+          git merge "$HEAD_BRANCH"
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -33,7 +39,7 @@ jobs:
         run: npm clean-install
       - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
         run: npm audit signatures
-      - name: Release
+      - name: Dry-run Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
