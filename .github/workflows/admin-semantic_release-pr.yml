@@ -30,7 +30,7 @@ jobs:
         env:
           HEAD_BRANCH: ${{ github.head_ref }}
         run: |
-          git merge "$HEAD_BRANCH"
+          git merge "origin/$HEAD_BRANCH"
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
