@@ -57,6 +57,8 @@ jobs:
           tee /tmp/semantic-release-raw.txt
 
       - name: Clean semantic-release output for comment
+        env:
+          FOO: "BAR"
         run: |
           sed -n \
             -e '1,/Release note for version/d; p' \
@@ -67,5 +69,23 @@ jobs:
             -e "1s|\(\.\.\.[^)]*\))|...${HEAD_BRANCH} )|" \
             -e "1s/[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}/$(date -u '+%Y-%m-%dT%H:%M UTC')/" \
             -e "1s/^# /## /" \
+          | sed '1s/^/# Expected version change and release notes:\n/' \
           | tee /tmp/semantic-release-clean.txt
-          
+
+      - name: Find Comment
+        # https://github.com/peter-evans/find-comment
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: "# Expected version change and release notes:"
+
+      - name: Create or update comment
+        # https://github.com/peter-evans/create-or-update-comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: /tmp/semantic-release-clean.txt
+          edit-mode: replace
