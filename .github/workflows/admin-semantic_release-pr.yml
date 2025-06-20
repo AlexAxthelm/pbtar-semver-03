@@ -59,4 +59,13 @@ jobs:
             --no-ci | \
           tee /tmp/semantic-release-raw.txt
 
-
+      - name: Clean semantic-release output for comment
+        run: |
+          VERSION=$(grep -oE "The next release version is [0-9]+\.[0-9]+\.[0-9]+" .semver.log | awk '{print $6}')
+          echo "version=$VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          NOTES=$(sed -n '/^\*.*$/,/^$/p' .semver.log)
+          echo "$NOTES"
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
