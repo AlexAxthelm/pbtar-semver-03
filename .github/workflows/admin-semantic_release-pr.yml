@@ -41,10 +41,12 @@ jobs:
           node-version: "lts/*"
 
       - name: Install dependencies
-        run: npm clean-install
+        run: |
+          npm clean-install
 
       - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
-        run: npm audit signatures
+        run: |
+          npm audit signatures
 
       - name: Dry-run Release
         env:
@@ -56,3 +58,5 @@ jobs:
             --dry-run \
             --no-ci | \
           tee /tmp/semantic-release-raw.txt
+
+
